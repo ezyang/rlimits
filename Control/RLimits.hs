@@ -24,7 +24,7 @@ data Listener = Listener# Listener#
 data RCRef a = RCRef# (RCRef# a)
 
 getCurrentRC :: IO RC
-getCurrentRC = IO $ \s -> case getCurrentRC# s s of (# s', rc' #) -> (# s', RC# rc' #)
+getCurrentRC = IO $ \s -> case getCurrentRC# () s of (# s', rc' #) -> (# s', RC# rc' #)
 
 newRC :: Word -> RC -> IO RC
 newRC (W# w) (RC# rc) = IO $ \s -> case newRC# w rc s of (# s', rc' #) -> (# s', RC# rc' #)
