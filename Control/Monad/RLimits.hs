@@ -225,7 +225,7 @@ withRC :: RC -> CM a -> CM a
 withRC p m = do
     c <- getCurrentLabel
     st <- getStateTCB
-    check <- withGlobalStateTCB $ \g -> do
+    withGlobalStateTCB $ \g -> do
         when (S.member p (killed g)) $ error "withRC: cannot switch into dead container"
         writeIORef (label st) (S.insert p c)
     rc <- liftIOTCB $ transmuteRC p
@@ -246,7 +246,7 @@ rcKill p = do
         if p `S.member` killed g
             then return g
             else do
-                let killed' = S.delete p (killed g)
+                let killed' = S.insert p (killed g)
                 R.killRC =<< transmuteRC p
                 threads' <- (\f -> foldM f (threads g) (M.toList (threads g))) $ \m (i, (wtid, sr)) -> do
                     s <- readIORef sr
