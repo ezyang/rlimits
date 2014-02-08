@@ -1,5 +1,18 @@
 {-# LANGUAGE MagicHash, UnboxedTuples #-}
 
+module Control.RLimits (
+    RC,
+    Listener,
+    RCRef,
+    getCurrentRC,
+    newRC,
+    withRC,
+    listenRC,
+    unlistenRC,
+    readRCRef,
+    newRCRef
+) where
+
 import GHC.Base
 import GHC.Prim
 
