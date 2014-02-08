@@ -10,7 +10,8 @@ module Control.RLimits (
     listenRC,
     unlistenRC,
     readRCRef,
-    newRCRef
+    newRCRef,
+    killRC
 ) where
 
 import GHC.Base
