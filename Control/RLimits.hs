@@ -7,6 +7,7 @@ module Control.RLimits (
     getCurrentRC,
     newRC,
     withRC,
+    withRC1,
     listenRC,
     unlistenRC,
     readRCRef,
@@ -16,19 +17,27 @@ module Control.RLimits (
 
 import GHC.Base
 import GHC.Prim
+import Data.IORef
 
 data RC = RC# RC#
 data Listener = Listener# Listener#
 data RCRef a = RCRef# (RCRef# a)
 
-getCurrentRC :: a -> IO RC
-getCurrentRC x = IO $ \s -> case getCurrentRC# x s of (# s', rc' #) -> (# s', RC# rc' #)
+getCurrentRC :: IO RC
+getCurrentRC = IO $ \s -> case getCurrentRC# s s of (# s', rc' #) -> (# s', RC# rc' #)
 
 newRC :: Word -> RC -> IO RC
 newRC (W# w) (RC# rc) = IO $ \s -> case newRC# w rc s of (# s', rc' #) -> (# s', RC# rc' #)
 
 withRC :: RC -> IO a -> IO a
 withRC (RC# rc) (IO m) = IO $ \s -> withRC# rc m s
+
+-- XXX a better way is to just build in primop variants but this is not
+-- implemented yet
+withRC1 :: RC -> a -> (a -> IO b) -> IO b
+withRC1 rc x f = do
+    rx <- newIORef x
+    withRC rc $ readIORef rx >>= f
 
 -- XXX should be Word
 listenRC :: RC -> Int -> IO () -> IO Listener
