@@ -44,3 +44,6 @@ readRCRef (RCRef# ref) = IO $ \s -> case readRCRef# ref s of
 
 newRCRef :: RC -> a -> IO (RCRef a)
 newRCRef (RC# rc) p = IO $ \s -> case newRCRef# rc p s of (# s' , r #) -> (# s' , RCRef# r #)
+
+killRC :: RC -> IO ()
+killRC (RC# rc) = IO $ \s -> case killRC# rc s of s' -> (# s' , () #)
