@@ -1,0 +1,36 @@
+#include "Cmm.h"
+
+// We don't do anything unless it's in WHNF
+dupClosurezh (P_ p)
+{
+    W_ info, type, size, copy, i, tag;
+loop:
+    info = %GET_STD_INFO(UNTAG(p));
+    type = TO_W_(%INFO_TYPE(info));
+    switch [0 .. N_CLOSURE_TYPES] type {
+        case CONSTR, CONSTR_1_0, CONSTR_0_1, CONSTR_2_0, CONSTR_1_1, CONSTR_0_2 : {
+            size = TO_W_(%INFO_PTRS(info)) + TO_W_(%INFO_NPTRS(info));
+            tag = GETTAG(p);
+            goto out;
+        }
+        case IND, IND_PERM, IND_STATIC : {
+            p = StgInd_indirectee(p);
+            goto loop;
+        }
+        default : {
+            return (p);
+        }
+    }
+out:
+    ALLOC_PRIM(SIZEOF_StgHeader + WDS(size));
+    copy = Hp - SIZEOF_StgHeader - WDS(size) + WDS(1);
+    SET_HDR(copy, StgHeader_info(UNTAG(p)), CCCS);
+    i = 0;
+for:
+    if (i < size) {
+        W_[copy + SIZEOF_StgHeader + WDS(i)] = W_[UNTAG(p) + SIZEOF_StgHeader + WDS(i)];
+        i = i + 1;
+        goto for;
+    }
+    return (copy + tag);
+}

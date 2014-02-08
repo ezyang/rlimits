@@ -18,3 +18,4 @@ library
   exposed-modules:     Control.RLimits, Control.Monad.RLimits, Data.SafeCopy
   -- other-modules:       
   build-depends:       base, ghc-prim, containers
+  c-sources:           cbits/dup.c cbits/dup-prim.cmm
