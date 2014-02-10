@@ -69,7 +69,7 @@ data AllRCRef a = RCTerminal a
                 | RCGate (R.RCRef (AllRCRef a))
 
 data StateTCB = StateTCB {
-    label :: IORef RCSet, -- synchronized by 'killed'
+    label :: IORef RCSet, -- per thread state, but synchronized by 'global'
     tid :: Int,
     global :: MVar GlobalStateTCB
 }
